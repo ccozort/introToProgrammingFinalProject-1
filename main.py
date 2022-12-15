@@ -87,17 +87,56 @@ class Player(Sprite):
     self.rect.midbottom = self.pos
 
 #  set up the 'cheese' class, aka the objective of game
-class cheese(Sprite):
-    def __init__(self, x, y, w, h,):
+class Cheese(Sprite):
+    def __init__(self, x, y):
         Sprite.__init__(self)
         self.image = pg.image.load(os.path.join(img_folder, 'CHEESE.png')).convert()
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+        self.speedx = 0
+        self.speedy = 0
+        self.feardistance = 200
         print(self.rect.center)
         #range - distance to x -> difference between cheese.rect.x and mouse.rect.x -> if getting smaller, positive/negative
         # move cheese away in opposite direction
+    def update(self):
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+        if abs(player.rect.right - self.rect.x) + abs(self.rect.right - player.rect.x) < self.feardistance and abs(player.rect.bottom - self.rect.y) + abs(self.rect.bottom - player.rect.y)  < self.feardistance:
+            print('xdiff', abs(player.rect.right - self.rect.x) + abs(self.rect.right - player.rect.x))
+            if  player.rect.centerx < self.rect.centerx:
+                self.speedx= 2
+            else:
+                self.speedx = -2
+        if abs(player.rect.bottom - self.rect.y) + abs(self.rect.bottom - player.rect.y)  < self.feardistance:
+            print('ydiff', abs(player.rect.bottom - self.rect.y) + abs(self.rect.bottom - player.rect.y))
+            if  player.rect.centery < self.rect.centery:
+                self.speedy = 2
+            else:
+                self.speedy = -2
+        else:
+           self.speedx = 0
+           self.speedy = 0
+
+            # print(abs(self.rect.x + self.rect.width - player.rect.x))
+        # if abs(player.rect.x + player.rect.width - cheese.rect.x) < self.feardistance:
+        #     print(abs(player.rect.x + player.rect.width - cheese.rect.x))
+        #     print(abs(self.rect.x + self.rect.width - player.rect.x))
+        # if abs(self.rect.x + self.rect.width - player.rect.x) < self.feardistance:
+        #     print(abs(player.rect.x + player.rect.width - cheese.rect.x))
+        #     print(abs(self.rect.x + self.rect.width - player.rect.x))
+        # elif player.rect.x + self.rect.x > self.feardistance:
+        #     self.speed = 1
+        #     self.rect.x += -self.speed
+        # elif player.rect.y - self.rect.y < self.feardistance:
+        #     self.speed = 1
+        #     self.rect.y += self.speed
+        # elif player.rect.y - self.rect.y > self.feardistance:
+        #     self.speed = 1
+        #     self.rect.y += -self.speed
+
 
 #set up pygame making it ready to run, set the display and name of game 
 pg.init()
@@ -112,7 +151,7 @@ all_platforms = pg.sprite.Group()
 
 #instansiate classes
 player = Player()
-cheese = cheese(150, 300, 100, 30)
+cheese = Cheese(150, 300)
 
 #instances 
 all_sprites.add(player)
@@ -136,6 +175,9 @@ while running:
         hits = pg.sprite.spritecollide(player, all_platforms, False)
         if hits:
            pass
+    
+        
+    
     #drawing the game specifics
     screen.fill(DARKGRAY)
     all_sprites.draw(screen)
